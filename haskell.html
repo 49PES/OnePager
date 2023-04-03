@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html>
+	<head>	
+		<meta charset = "utf-8">
+		<meta name = "viewport" content = "width=device-width, initial-scale=1">
+		<title> Haskell One Pager </title>
+	</head>
+		
+    <body>
+        <h3> A Journey Into Haskell (And Functional Programming) </h3>
+		<h5> by Vansh Saboo </h5>
+
+		<h4> What is Haskell? </h4>
+		<p> 
+		Haskell is a <b> statically typed, lazy, purely functional </b> programming language. It's based off of principles borrowed from <b> Lambda Calculus </b> and <b> Category Theory. </b>
+		</p>
+
+		<h4> Brief Overview of Lambda Calculus </h4>
+
+		<p> If we wanted to program a function that returns the elements of an array multiplied by 2 in Java, here's how it might look: </p>
+		
+		<pre>
+			<code class="language-java">
+public static int[] doubleMe(int[] nums){
+	for(int i = 0; i < nums.length; i++){
+		nums[i] = 2 * nums[i];
+	}
+	return nums;
+}
+			</code>
+		</pre>
+		<p>
+			For this code to apply <code> double(double(double([2, 3, 5, 7]))) </code>, it would need to pass through the array three times. The end result of this operation will be to multiply each of the elements in the array by eight - and Haskell is able to abstractify its functions in order to go through the array in one pass. It can do this by looking at the outer functions, which each apply a *2 to the entries of a list, and combine them into a *8.				
+		</p>
+		<p> In Haskell, this would look like: </p>
+		<pre>
+			<code class = "language-haskell">
+-- map the elements of a list to 2 times each of them 
+
+timesTwo nums = map (\c -> 2 * c) nums  
+
+-- Function composition of timesTwo three times to make single * 8
+-- 2 * 2 * 2 * [nums] => 8 * [nums]
+
+timesEight = timesTwo . timesTwo . timesTwo  
+			</code>
+		</pre>
+
+		<p>
+			Haskell's functional programming paradigm with lambda calculus also allows for <b>partial fraction application</b>, or <b>currying</b>. Currying is a technique used in functional programming to transform a function that takes multiple arguments into a sequence of functions that each takes a single argument.
+		</p>
+		<p>
+			In other words, instead of passing all the arguments to a function at once, you pass them one by one and get a new function back after each argument is passed. For example, take this code for a mini-calculator that takes in an operator in character format and two numbers, and performs that operation on the number:
+		</p>
+		<pre>
+			<code class = "language-haskell">
+basicOp op n1 n2 
+	| op == '+' = (+) n1 n2
+	| op == '-' = (-) n1 n2
+	| op == '*' = (*) n1 n2 
+	| op == '/' = (div) n1 n2
+			</code>
+		</pre>
+		<p> If you look at the code from a Haskell standpoint, you may notice that what's really happening is a transformation from the character operator to the operator-operator. Then that operator is applied to the two numbers. So we can abstractify our code to look like: </p>
+		<pre>
+			<code class = "language-haskell">
+basicOp op  
+	| op == '+' = (+) 
+	| op == '-' = (-) 
+	| op == '*' = (*) 
+	| op == '/' = (div) 
+			</code>
+		</pre>
+		<p> This code block takes in a character, and returns a <i> function </i> that can be applied to two numbers. </p>
+
+		<h4> Haskell Quirks </h4>
+		<h5> Immutability </h5>
+		<p> Haskell consists of <b> immutable data structures </b> - which means no mutating objects in memory. Once you set the value for a variable, it can not be changed - much like a constant.</p>
+		<p> This forces the programmer to adopt different paradigms - such as going from iteration to recursion. Below is an example of iterative code in Java being translated into Haskell. </p>
+
+		<pre>
+			<code class = "language-java">
+public static int sum(int[] list){
+	int sum = 0;
+	for(int i : list)
+		sum += i;
+	return sum;
+}
+			</code>
+		</pre>
+
+		<pre>
+			<code class = "language-haskell">
+
+-- Base case! Sum of an empty list is 0.
+listSum [] = 0
+
+-- Given the head of a list and the rest of the list,
+-- the sum of the list is equal to the head plus the sum of the rest of the website
+list (x:xs) = x + listSum(xs)  				
+			</code>
+		</pre>
+		<p> While everything being immutable might initially seem detrimental, it also allows for better reasoning of code. For instance, in the following code, modifying <code> wordsCopy </code> modifies <code> words</code> as well: </p>
+		<pre>
+			<code class = "language-java">
+String[] words = {"foo", "moo", "roo"}; 
+String[] wordsCopy = words;
+for(int i = 0; i < wordsCopy.length; i++)
+	wordsCopy[i] += "d";
+			</code>
+		</pre>
+		<h5> Purity of Functions </h5>
+		<p> 
+			As a consequence of immutability, Haskell functions are also <b> "pure" </b> - which means <b> no side effects </b> (i.e. they produce no observable effect other than the result they return). Printing to a screen and writing to disk are some examples of side effects. 
+		</p>
+		<p> Functions being pure also has a consequence of <b> referential transparency</b>: invoking the function in a different context or a different time but with the same arguments will <i> always </i> produce the same results.
+		</p>
+		<h5> Lazy Evaluation </h5>
+		<p> Expressions in Haskell are <b> lazy </b> - they aren't evaluated unless they are needed. For instance, if we wanted an "infinite" list of the multiples of 13, it would look like <code> [13, 26..] </code> - where the compiler understands that you iterate by 13 each time. If you then wanted the first ten elements, you can use <code> take 10 [13, 26..]</code> to do so. </p>
+		<h5> Polymorphism </h5>
+		<p> A value is polymorphic if there is more than one type it can have. Polymorphism is a key feature of Haskell's type system, where functions without a defined signature (input/output types) are given the broadest set possible. Polymorphism is similar to Java interfaces in that they allow an abstraction of types.			
+		</p>
+		<pre> 
+			<code class = "language-haskell"> 
+-- length takes in a list with any type - so the usage of "a" allows for generic type				
+length :: [a] -> Integer  
+length [] = 0 
+length (x:xs) = 1 + length xs				
+			</code>
+		</pre>
+    </body>
+</html>
